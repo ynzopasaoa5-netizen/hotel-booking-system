@@ -17,6 +17,16 @@ return Application::configure(basePath: dirname(__DIR__))
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
     ]);
 
+    // Trust Railway's reverse proxy so Laravel generates correct
+    // https:// URLs (fixes broken CSS/mixed-content on production).
+    $middleware->trustProxies(
+        at: '*',
+        headers: Request::HEADER_X_FORWARDED_FOR |
+                 Request::HEADER_X_FORWARDED_HOST |
+                 Request::HEADER_X_FORWARDED_PORT |
+                 Request::HEADER_X_FORWARDED_PROTO,
+    );
+
 })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
